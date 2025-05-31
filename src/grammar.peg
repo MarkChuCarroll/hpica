@@ -1,0 +1,134 @@
+
+hadron = use_decl+ definition+
+
+use_decl = "use" uident ( "{" comma(sym)  "}" )?
+
+definition = flavor_def / quark_def / boson_def
+
+flavor_def =
+	"flavor" type_param_block? USYM
+
+	   ("composes" comma(stype))?
+	   "is"
+	   channel_def+
+	   "end" ("@flavor")?
+	
+quark_def =
+   "quark" type_param_block? USYM value_params ("provides" comma(stype))?
+	"is"
+   channel_def+
+   slot_def*
+   behavior_def+
+   "adopt" USYM "(" comma(expr) ")"
+   "end" ( "@quark" )?
+
+behavior_def =
+   "behavior" USym value_params "do"
+   action+
+   "end" "@behavior"?
+
+boson_def =
+   "boson" type_param_block? USYM "is"
+     boson_option+
+   "end" ("@boson")?
+
+boson_option =
+   USYM "(" comma(stype) ")"
+ / USYM "{" comma(LSYM ":" stype) "}"
+
+channel_def =
+  	chan USym ":" channel_dir stype
+
+channel_dir = "in" | "out" | "both"
+
+slot_def = "slot" LSYM ":" stype? "=" expr
+
+type_param_block = "[" comma(type_param_spec) "]"
+
+type_param_spec = TYPEVAR ( "<:" stype )?
+
+value_params = "(" comma(typed_name) ")"
+
+typed_name = LSYM ":" stype
+
+identifier = sep("::", USYM)
+
+action =
+	"par" "{" action+ "}"
+  / "seq" "{" action+ "}"
+  / "sel" "{" action+ "}"
+  / "send" expr "(" expr ")"
+  / recv_action
+  / LSYM ":=" expr
+  / "var" LSYM ":" stype? "=" expr
+  / cond_action
+  / "while" expr "do" action+ "end" "@while"?
+  / "for" LSYM "in" expr "do" action+ "end" "@for"?
+  / "adopt" USYM "(" comma(expr) ")"
+  / "exit"
+
+recv_action =
+   "recv" expr "do"
+      recv_clause+
+	  ("else" action+)
+   "end" "@recv"?
+
+recv_clause =
+   on message_pattern "do" action+ "end"
+
+message_pattern =
+     USym "(" comma(lsym) ")"
+   / USym "{" comma()"}"
+
+
+cond_action = "cond" cond_clause+ ("else" action+)? "end" "@cond"?
+
+cond_clause = expr "then" action+
+
+expr =
+    "create" stype "(" comma(expr) ")"
+  / logic_expr
+
+logic_expr =
+    logic_expr logic_op compare_expr 
+  / compare_expr
+
+compare_expr =
+     compare_expr compare_op add_expr
+   / add_expr
+
+add_expr =
+     add_expr add_op mult_expr
+   / mult_expr
+
+mult_expr =
+     mult_expr mult_op pow_expr
+   / pow_expr
+
+pow_expr =
+      pow_expr pow_op chan_ref_expr
+   /  chan_ref_expr
+
+chan_ref_expr =
+      unary_expr ( "." LYSM )?
+
+unary_expr =
+      unary_op unary_expr
+   /  primary_expr
+
+primary_expr =
+      literal_expr
+   / boson_value_expr
+   / LSYM 
+   / literal_expr
+   / "(" expr ")"
+
+boson_value_expr =   
+      USym "(" comma(expr)? ")"
+   /  USym "{" comma(LSym "=" expr) }"
+
+literal_expr =
+      STRLIT
+   /  INTLIT
+   /  FLOATLIT
+   /  CHARLIT   

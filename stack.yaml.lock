@@ -18,6 +18,13 @@ packages:
       size: 8413
   original:
     hackage: text-2.1.1
+- completed:
+    hackage: containers-0.6.8@sha256:bb2bec1bbc6b39a7c97cd95e056a5698ec45beb5d8feb6caae12af64e4bd823c,2670
+    pantry-tree:
+      sha256: 62d0b7f21a9f298867bbf0acae201d1fe4e32d309b4085a52c037eb551852811
+      size: 2954
+  original:
+    hackage: containers-0.6.8
 snapshots:
 - completed:
     sha256: f4a61482dcad21151331bf84ec85bee9be43965f143791fa4bb202ac1e443e1b

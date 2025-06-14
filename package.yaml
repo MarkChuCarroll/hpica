@@ -38,6 +38,7 @@ library:
   - base >= 4.7 && < 5
   - Earley >= 0.13.0.1
   - text >= 2.1.1
+  - containers >= 0.6.8
 
 
 executables:
@@ -50,7 +51,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - hpica
-  
+    - Earley >= 0.13.0.1
 
 tests:
   hpica-test:
